@@ -1,0 +1,124 @@
+
+let plants = [];
+let tool = "seed";
+
+function setup() {
+  createCanvas(600, 400);
+}
+
+function draw() {
+  // Sky
+  background(170, 220, 255);
+
+  // Sun
+  fill(255, 220, 80);
+  noStroke();
+  circle(530, 65, 65);
+
+  // Grass
+  fill(130, 200, 110);
+  rect(0, 180, 600, 220);
+
+  // Dirt
+  fill(150, 100, 65);
+  rect(0, 270, 600, 130);
+
+  // Title
+  fill(50, 90, 50);
+  textAlign(CENTER);
+  textSize(26);
+  text("Grow Your Own Garden", 300, 40);
+
+  // Instructions
+  textSize(15);
+  text("Press 1 to plant seeds", 300, 75);
+  text("Press 2 to water plants", 300, 95);
+
+  // Show selected tool
+  textSize(16);
+  text("Current Tool: " + tool, 300, 125);
+
+  // Draw every plant
+  for (let i = 0; i < plants.length; i++) {
+    drawPlant(plants[i]);
+  }
+}
+
+function mousePressed() {
+  // Only allow planting in dirt
+  if (mouseY > 270 && mouseY < 390 &&
+      mouseX > 20 && mouseX < 580) {
+
+    if (tool === "seed") {
+      let plant = {
+        x: mouseX,
+        y: mouseY,
+        stage: 0,
+        color: random(["pink", "purple", "yellow"])
+      };
+
+      plants.push(plant);
+    }
+
+    if (tool === "water") {
+      for (let i = 0; i < plants.length; i++) {
+        let p = plants[i];
+
+        if (dist(mouseX, mouseY, p.x, p.y) < 30) {
+          if (p.stage < 3) {
+            p.stage++;
+          }
+        }
+      }
+    }
+  }
+}
+
+function keyPressed() {
+  if (key === "1") {
+    tool = "seed";
+  }
+
+  if (key === "2") {
+    tool = "water";
+  }
+}
+
+function drawPlant(p) {
+  noStroke();
+
+  if (p.stage === 0) {
+    // Seed
+    fill(80, 50, 25);
+    ellipse(p.x, p.y, 12, 8);
+  }
+
+  if (p.stage >= 1) {
+    // Stem
+    stroke(40, 130, 50);
+    strokeWeight(4);
+    line(p.x, p.y, p.x, p.y - 20 * p.stage);
+    noStroke();
+
+    // Leaves
+    fill(60, 170, 70);
+    ellipse(p.x - 10, p.y - 15, 20, 10);
+    ellipse(p.x + 10, p.y - 25, 20, 10);
+  }
+
+  if (p.stage === 3) {
+    // Flower petals
+    fill(p.color);
+
+    let flowerY = p.y - 60;
+
+    circle(p.x - 12, flowerY, 22);
+    circle(p.x + 12, flowerY, 22);
+    circle(p.x, flowerY - 12, 22);
+    circle(p.x, flowerY + 12, 22);
+
+    // Flower center
+    fill(255, 210, 60);
+    circle(p.x, flowerY, 18);
+  }
+}
